@@ -1,57 +1,60 @@
+from pojistenec import Pojistenec
+
 class Aplikace:
-    def __init__(self, spravce):
-       self.spravce = spravce  # Uložíme správce pojištěnců do atributu třídy Aplikace
+    def __init__(self):
+        self.pojistenci = []  # Seznam pojištěnců je definován přímo v aplikaci
 
-    def spustit_aplikaci(self):
-       while True:
-          akce = input(
-             "1 - Přidat pojištěnce\n"
-             "2 - Zobrazit všechny pojištěnce\n"
-             "3 - Vyhledat pojištěnce\n"
-             "4 - Konec\n"
-             "Vyberte akci: "
-          )
-
-          if akce == "1":
-             self.pridat_pojistence_uzivatelsky()
-          elif akce == "2":
-             self.spravce.vypis_pojistencu()
-          elif akce == "3":
-             self.vyhledat_pojistence_uzivatelsky()  # Zavoláme metodu pro hledání pojištěnce
-          elif akce == "4":
-             print("Konec aplikace.")
-             break
-          else:
-             print("Neplatná volba. Zkuste to znovu.")
-
-    def pridat_pojistence_uzivatelsky(self):
+    def pridej_pojistence(self):
         jmeno = input("Zadejte jméno: ")
         prijmeni = input("Zadejte příjmení: ")
-        while True:
-            try:
-                vek = int(input("Zadejte věk: "))
-                if vek <= 0:
-                    print("Věk musí být kladné číslo.")
-                else:
-                    break
-            except ValueError:
-                print("Neplatný formát věku. Zadejte prosím číslo.")
+        vek = int(input("Zadejte věk: "))
         telefon = input("Zadejte telefonní číslo: ")
-        self.spravce.pridat_pojistence(jmeno, prijmeni, vek, telefon)
+        pojistenec = Pojistenec(jmeno, prijmeni, vek, telefon)
+        self.pojistenci.append(pojistenec)
         print("Pojištěnec byl přidán.")
 
-    def vyhledat_pojistence_uzivatelsky(self):
-        jmeno = input("Zadejte hledané jméno (nebo nechte prázdné): ") or None
-        prijmeni = input("Zadejte hledané příjmení (nebo nechte prázdné): ") or None
-        vek_str = input("Zadejte hledaný věk (nebo nechte prázdné): ")
-        vek = int(vek_str) if vek_str else None
-        telefon = input("Zadejte hledané telefonní číslo (nebo nechte prázdné): ") or None
+    def vypis_pojistencu(self):
+        if self.pojistenci:
+            for pojistenec in self.pojistenci:
+                print(pojistenec)
+        else:
+            print("Žádní pojištěnci nejsou k dispozici.")
 
-        nalezeni = self.spravce.vyhledat_pojistence(jmeno, prijmeni, vek, telefon)
+    def vyhledej(self, jmeno=None, prijmeni=None):
+        nalezeni = []
+        for pojistenec in self.pojistenci:
+            if (jmeno is None or pojistenec.jmeno.lower() == jmeno.lower()) and \
+               (prijmeni is None or pojistenec.prijmeni.lower() == prijmeni.lower()):
+                nalezeni.append(pojistenec)
 
         if nalezeni:
-          print("Nalezený pojištěnci:")
-          for p in nalezeni:
-             print(p)
+            print("Nalezený pojištěnci:")
+            for pojistenec in nalezeni:
+                print(pojistenec)
         else:
-          print("Pojištěnec nenalezen.")
+            print("Pojištěnec nenalezen.")
+
+    def spustit_aplikaci(self):
+        while True:
+            akce = input(
+                "Vyberte akci:\n"
+                "1 - Přidat pojištěnce\n"
+                "2 - Zobrazit všechny pojištěnce\n"
+                "3 - Vyhledat pojištěnce\n"
+                "4 - Konec\n"
+                "Vaše volba: "
+            )
+
+            if akce == "1":
+                self.pridej_pojistence()
+            elif akce == "2":
+                self.vypis_pojistencu()
+            elif akce == "3":
+                jmeno = input("Zadejte jméno pojištěnce: ")
+                prijmeni = input("Zadejte příjmení pojištěnce: ")
+                self.vyhledej(jmeno, prijmeni)
+            elif akce == "4":
+                print("Aplikace byla ukončena.")
+                break
+            else:
+                print("Neplatná volba, zkuste to znovu.")
